@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - Recicla-me Se For Capaz</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <header>
+        <h1>♻️ Recicla-me Se For Capaz</h1>
+        <p>Sistema de Gestão de Coleta Seletiva</p>
+    </header>
+
+    <main>
+        <div class="card">
+            <h2>🌱 Criar minha conta</h2>
+            <p style="color:#555; margin-bottom: 1rem;">Preencha os dados abaixo para se cadastrar.</p>
+
+            {% if erro %}
+            <p class="erro">{{ erro }}</p>
+            {% endif %}
+
+            {% if sucesso %}
+            <p class="sucesso">{{ sucesso }}</p>
+            {% endif %}
+
+            <form method="POST" action="/cadastro_publico">
+                <div class="campo">
+                    <label>Nome completo</label>
+                    <input type="text" name="nome" placeholder="Seu nome completo" required>
+                </div>
+                <div class="campo">
+                    <label>CPF</label>
+                    <input type="text" name="cpf" placeholder="Somente números" maxlength="11" required>
+                </div>
+                <div class="campo">
+                    <label>Data de nascimento</label>
+                    <input type="date" name="data_nascimento" required>
+                </div>
+                <div class="campo">
+                    <label>E-mail</label>
+                    <input type="email" name="email" placeholder="seu@email.com" required>
+                </div>
+                <div class="campo">
+                    <label>Telefone</label>
+                    <input type="text" name="telefone" placeholder="(47) 99999-9999">
+                </div>
+                <div class="campo">
+                    <label>Nome de usuário</label>
+                    <input type="text" name="usuario" placeholder="Como quer ser chamado" required>
+                </div>
+                <div class="campo">
+                    <label>Senha</label>
+                    <input type="password" name="senha_hash" placeholder="Crie uma senha" required>
+                </div>
+
+                <!-- Seleção de bairro -->
+                <div class="campo">
+                    <label>Seu bairro</label>
+                    <select name="bairro_id" id="bairro_id" onchange="mostrarDiasColeta()">
+                        <option value="">-- Selecione seu bairro --</option>
+                        {% for bairro in bairros %}
+                        <option value="{{ bairro.id }}">{{ bairro.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Dias de coleta do bairro -->
+                <div id="info_coleta" style="display:none; background:#f0f9f0; border:1px solid #a8d5a2; border-radius:8px; padding:1rem; margin-bottom:1rem;">
+                    <p style="font-weight:600; color:#2d6a2d; margin-bottom:0.5rem;">📅 Dias de coleta no seu bairro:</p>
+                    <div id="dias_coleta" style="color:#444; font-size:0.95rem;"></div>
+                </div>
+
+                <!-- Preferências de alerta -->
+                <div id="preferencias_alerta" style="display:none;" class="campo">
+                    <label style="margin-bottom:0.5rem;">Quero receber alertas de:</label>
+                    <div style="display:flex; flex-direction:column; gap:0.5rem; margin-top:0.25rem;">
+                        <label style="display:flex; align-items:center; gap:0.5rem; font-weight:normal; cursor:pointer;">
+                            <input type="checkbox" name="alerta_seletiva" value="1" checked>
+                            ♻️ Coleta Seletiva (recicláveis)
+                        </label>
+                        <label style="display:flex; align-items:center; gap:0.5rem; font-weight:normal; cursor:pointer;">
+                            <input type="checkbox" name="alerta_comum" value="1" checked>
+                            🗑️ Coleta Comum (orgânico)
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit">Cadastrar</button>
+            </form>
+
+            <p style="text-align:center; margin-top:1rem;">
+                Já tem conta? <a href="/login">Fazer login</a>
+            </p>
+        </div>
+    </main>
+
+    <script>
+        function mostrarDiasColeta() {
+            const bairroId = document.getElementById("bairro_id").value;
+            const infoDiv = document.getElementById("info_coleta");
+            const diasDiv = document.getElementById("dias_coleta");
+            const preferenciasDiv = document.getElementById("preferencias_alerta");
+
+            if (!bairroId) {
+                infoDiv.style.display = "none";
+                preferenciasDiv.style.display = "none";
+                return;
+            }
+
+            fetch(`/api/coletas_bairro/${bairroId}`)
+                .then(response => response.json())
+                .then(coletas => {
+                    if (!coletas || coletas.length === 0) {
+                        diasDiv.innerHTML = "<em>Nenhuma coleta cadastrada para este bairro ainda.</em>";
+                        infoDiv.style.display = "block";
+                        preferenciasDiv.style.display = "none";
+                        return;
+                    }
+
+                    let html = "";
+                    coletas.forEach(c => {
+                        const emoji = c.tipo === "Seletiva" ? "♻️" : "🗑️";
+                        html += `<p>${emoji} <strong>${c.tipo}</strong> — toda <strong>${c.dia_semana}</strong></p>`;
+                    });
+
+                    diasDiv.innerHTML = html;
+                    infoDiv.style.display = "block";
+                    preferenciasDiv.style.display = "block";
+                });
+        }
+    </script>
+
+</body>
+</html>

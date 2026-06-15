@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novo Conteúdo - Recicla-me Se For Capaz</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <header>
+        <h1>♻️ Recicla-me Se For Capaz</h1>
+        <p>Sistema de Gestão de Coleta Seletiva</p>
+    </header>
+
+    <nav>
+        <a href="/">Início</a>
+        <a href="/meus_dados">Meus Dados</a>
+        <a href="/bairros">Bairros</a>
+        <a href="/coletas">Coletas</a>
+        <a href="/conteudos">Conteúdos</a>
+        <a href="/logout" class="sair">Sair</a>
+    </nav>
+
+    <main>
+        <div class="card">
+            <h2>📝 Novo Conteúdo</h2>
+            <form method="POST">
+                <label>Título</label>
+                <input type="text" name="titulo" required>
+
+                <label>Corpo</label>
+                <textarea name="corpo" rows="6" required></textarea>
+
+                <label>Tipo</label>
+                <select name="tipo">
+                    <option value="post">Post</option>
+                    <option value="artigo">Artigo</option>
+                    <option value="dica">Dica</option>
+                </select>
+
+                <label>Categoria</label>
+                <select name="id_categoria">
+                    {% for cat in categorias %}
+                    <option value="{{ cat.id }}">{{ cat.nome }}</option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit">Salvar</button>
+                <a href="/conteudos">Cancelar</a>
+            </form>
+        </div>
+    </main>
+
+</body>
+</html>

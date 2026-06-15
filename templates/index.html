@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recicla-me Se For Capaz</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <header>
+        <h1>♻️ Recicla-me Se For Capaz</h1>
+        <p>Sistema de Gestão de Coleta Seletiva</p>
+    </header>
+
+    <nav>
+        <a href="/">Início</a>
+        {% if session.perfil == "admin" %}
+        <a href="/usuarios">Usuários</a>
+        <a href="/cadastrar">Cadastrar</a>
+        {% else %}
+        <a href="/meus_dados">Meus Dados</a>
+        {% endif %}
+        <a href="/bairros">Bairros</a>
+        <a href="/coletas">Coletas</a>
+        <a href="/logout" class="sair">Sair</a>
+    </nav>
+
+    <main>
+        <div class="card">
+            <h2>🌿 Bem-vindo ao Recicla-me Se For Capaz</h2>
+            {% if session.perfil == "admin" %}
+            <p>Você está logado como <strong>Administrador</strong>.</p>
+            {% else %}
+            <p>Olá, <strong>{{ session.nome }}</strong>! Você está logado como <strong>Usuário</strong>.</p>
+            {% endif %}
+        </div>
+
+        {% if session.perfil == "admin" %}
+        <div class="cards-resumo">
+            <div class="card-resumo">
+                <span class="icone">👤</span>
+                <h3>{{ total_usuarios }}</h3>
+                <p>Usuários</p>
+            </div>
+            <div class="card-resumo">
+                <span class="icone">🏘️</span>
+                <h3>{{ total_bairros }}</h3>
+                <p>Bairros</p>
+            </div>
+            <div class="card-resumo">
+                <span class="icone">🚛</span>
+                <h3>{{ total_coletas }}</h3>
+                <p>Coletas</p>
+            </div>
+        </div>
+        {% endif %}
+    </main>
+
+</body>
+</html>

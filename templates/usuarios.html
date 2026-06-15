@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuários - Recicla-me Se For Capaz</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <header>
+        <h1>♻️ Recicla-me Se For Capaz</h1>
+        <p>Sistema de Gestão de Coleta Seletiva</p>
+    </header>
+
+    <nav>
+        <a href="/">Início</a>
+        <a href="/usuarios">Usuários</a>
+        <a href="/cadastrar">Cadastrar</a>
+        <a href="/bairros">Bairros</a>
+        <a href="/coletas">Coletas</a>
+        <a href="/logout" class="sair">Sair</a>
+    </nav>
+
+    <main>
+        <div class="card">
+            <h2>👤 Usuários Cadastrados</h2>
+
+            <!-- FILTRO POR BAIRRO -->
+            <form method="GET" action="/usuarios" style="margin-bottom: 1.5rem; display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
+                <label style="font-weight:bold;">Filtrar por bairro:</label>
+                <select name="bairro_id" onchange="this.form.submit()">
+                    <option value="">-- Todos os bairros --</option>
+                    {% for bairro in bairros %}
+                    <option value="{{ bairro.id }}"
+                        {% if bairro_filtro and bairro_filtro == bairro.id|string %}selected{% endif %}>
+                        {{ bairro.nome }}
+                    </option>
+                    {% endfor %}
+                </select>
+                {% if bairro_filtro %}
+                <a href="/usuarios" style="color:#888; font-size:0.9rem;">✖ Limpar filtro</a>
+                {% endif %}
+            </form>
+
+            <!-- CONTAGEM -->
+            <p style="margin-bottom:1rem; color:#555;">
+                {{ usuarios|length }} usuário(s) encontrado(s).
+            </p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Telefone</th>
+                        <th>Usuário</th>
+                        <th>Bairro</th>
+                        <th>Alertas</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in usuarios %}
+                    <tr>
+                        <td>{{ u.nome }}</td>
+                        <td>{{ u.email }}</td>
+                        <td>{{ u.telefone }}</td>
+                        <td>{{ u.usuario }}</td>
+                        <td>{{ u.nome_bairro if u.nome_bairro else "—" }}</td>
+                        <td style="white-space:nowrap;">
+                            {% if u.alerta_seletiva %}<span style="display:inline-block;">♻️ Seletiva</span>{% endif %}
+                            {% if u.alerta_seletiva and u.alerta_comum %} | {% endif %}
+                            {% if u.alerta_comum %}<span style="display:inline-block;">🗑️ Comum</span>{% endif %}
+                            {% if not u.alerta_seletiva and not u.alerta_comum %}—{% endif %}
+                        </td>
+                        <td>
+                            <a href="/editar_usuario/{{ u.id }}">✏️ Editar</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </main>
+
+</body>
+</html>

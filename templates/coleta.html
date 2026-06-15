@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coletas - Recicla-me Se For Capaz</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <header>
+        <h1>♻️ Recicla-me Se For Capaz</h1>
+        <p>Sistema de Gestão de Coleta Seletiva</p>
+    </header>
+
+   <nav>
+    <a href="/">Início</a>
+    <a href="/usuarios">Usuários</a>
+    <a href="/cadastrar">Cadastrar</a>
+    <a href="/bairros">Bairros</a>
+    <a href="/coletas">Coletas</a>
+</nav>
+
+    <main>
+        <div class="card">
+            <h2>🚛 Coletas Cadastradas</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Bairro ID</th>
+                        <th>Dia da Semana</th>
+                        <th>Horário Início</th>
+                        <th>Horário Fim</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in coletas %}
+                    <tr>
+                        <td>{{ c.id }}</td>
+                        <td>{{ c.bairro_id }}</td>
+                        <td>{{ c.dia_semana }}</td>
+                        <td>{{ c.horario_inicio }}</td>
+                        <td>{{ c.horario_fim }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+</body>
+</html>

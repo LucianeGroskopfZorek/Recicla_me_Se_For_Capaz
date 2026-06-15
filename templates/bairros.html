@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bairros - Recicla-me Se For Capaz</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <header>
+        <h1>♻️ Recicla-me Se For Capaz</h1>
+        <p>Sistema de Gestão de Coleta Seletiva</p>
+    </header>
+
+    <nav>
+        <a href="/">Início</a>
+        <a href="/meus_dados">Meus Dados</a>
+        <a href="/bairros">Bairros</a>
+        <a href="/coletas">Coletas</a>
+        <a href="/logout" class="sair">Sair</a>
+    </nav>
+
+    <main>
+        <div class="card">
+            <h2>📍 Bairros e Horários de Coleta</h2>
+            <p style="color:#555; margin-bottom:1.5rem;">Confira o dia e tipo de coleta do seu bairro.</p>
+
+            {% if bairros %}
+            <table class="tabela">
+                <thead>
+                    <tr>
+                        <th>Bairro</th>
+                        <th>Zona</th>
+                        <th>♻️ Coleta Seletiva</th>
+                        <th>🗑️ Coleta Comum</th>
+                        {% if session.get('perfil') == 'admin' %}
+                        <th>Ações</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bairro in bairros %}
+                    <tr>
+                        <td>{{ bairro.nome }}</td>
+                        <td>{{ bairro.zona }}</td>
+                        <td>{{ bairro.seletiva or '—' }}</td>
+                        <td>{{ bairro.organica or '—' }}</td>
+                        {% if session.get('perfil') == 'admin' %}
+                        <td>
+                            <a href="/editar_bairro/{{ bairro.id }}" 
+                               style="background:#2d6a2d; color:white; padding:0.3rem 0.8rem; border-radius:6px; text-decoration:none; font-size:0.85rem;">
+                                ✏️ Editar
+                            </a>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p style="color:#888;">Nenhum bairro cadastrado ainda.</p>
+            {% endif %}
+        </div>
+    </main>
+
+</body>
+</html>

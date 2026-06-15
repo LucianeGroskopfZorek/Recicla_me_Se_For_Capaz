@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Bairro - Recicla-me Se For Capaz</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <header>
+        <h1>♻️ Recicla-me Se For Capaz</h1>
+        <p>Sistema de Gestão de Coleta Seletiva</p>
+    </header>
+
+    <nav>
+        <a href="/">Início</a>
+        <a href="/meus_dados">Meus Dados</a>
+        <a href="/bairros">Bairros</a>
+        <a href="/coletas">Coletas</a>
+        <a href="/logout" class="sair">Sair</a>
+    </nav>
+
+    <main>
+        <div class="card">
+            <h2>✏️ Editar Bairro</h2>
+            <p style="color:#555; margin-bottom:1rem;">Atualize os dados do bairro e seus dias de coleta.</p>
+
+            {% if erro %}
+            <p class="erro">{{ erro }}</p>
+            {% endif %}
+
+            {% if sucesso %}
+            <p class="sucesso">{{ sucesso }}</p>
+            {% endif %}
+
+            <form method="POST" autocomplete="off">
+
+                <div class="campo">
+                    <label>Nome do bairro</label>
+                    <input type="text" name="nome" value="{{ bairro.nome }}" required autocomplete="off">
+                </div>
+
+                <div class="campo">
+                    <label>Zona</label>
+                    <select name="zona">
+                        {% for z in ['Norte', 'Sul', 'Leste', 'Oeste', 'Centro'] %}
+                        <option value="{{ z }}" {% if bairro.zona == z %}selected{% endif %}>{{ z }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <hr style="margin: 1.5rem 0; border-color:#ddd;">
+                <p style="font-weight:600; color:#2d6a2d; margin-bottom:1rem;">📅 Dias de Coleta</p>
+
+                <div class="campo">
+                    <label>♻️ Coleta Seletiva — dia da semana</label>
+                    <select name="dia_seletiva">
+                        <option value="">— Sem coleta seletiva —</option>
+                        {% for dia in ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'] %}
+                        <option value="{{ dia }}" {% if coleta_seletiva and coleta_seletiva.dia_semana == dia %}selected{% endif %}>{{ dia }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label>🗑️ Coleta Comum — dia da semana</label>
+                    <select name="dia_comum">
+                        <option value="">— Sem coleta comum —</option>
+                        {% for dia in ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'] %}
+                        <option value="{{ dia }}" {% if coleta_comum and coleta_comum.dia_semana == dia %}selected{% endif %}>{{ dia }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div style="display:flex; gap:1rem; margin-top:1.5rem;">
+                    <button type="submit">💾 Salvar alterações</button>
+                    <a href="/bairros" style="background:#888; color:white; padding:0.75rem 1.5rem; border-radius:8px; text-decoration:none; font-size:1rem;">
+                        Cancelar
+                    </a>
+                </div>
+
+            </form>
+        </div>
+    </main>
+
+</body>
+</html>

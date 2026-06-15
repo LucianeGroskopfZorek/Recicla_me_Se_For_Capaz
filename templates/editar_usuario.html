@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Usuário - Recicla-me Se For Capaz</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <header>
+        <h1>♻️ Recicla-me Se For Capaz</h1>
+        <p>Sistema de Gestão de Coleta Seletiva</p>
+    </header>
+
+    <nav>
+        <a href="/">Início</a>
+        <a href="/usuarios">Usuários</a>
+        <a href="/cadastrar">Cadastrar</a>
+        <a href="/bairros">Bairros</a>
+        <a href="/coletas">Coletas</a>
+        <a href="/logout" class="sair">Sair</a>
+    </nav>
+
+    <main>
+        <div class="card">
+            <h2>✏️ Editar Usuário</h2>
+            <form method="POST">
+                <label>Nome</label>
+                <input type="text" name="nome" value="{{ usuario.nome }}" required>
+
+                <label>CPF</label>
+                <input type="text" name="cpf" value="{{ usuario.cpf }}" required>
+
+                <label>Email</label>
+                <input type="email" name="email" value="{{ usuario.email }}">
+
+                <label>Telefone</label>
+                <input type="text" name="telefone" value="{{ usuario.telefone }}">
+
+                <label>Usuário</label>
+                <input type="text" name="usuario" value="{{ usuario.usuario }}">
+
+                <button type="submit">Salvar Alterações</button>
+                <a href="/usuarios">Cancelar</a>
+            </form>
+        </div>
+    </main>
+
+</body>
+</html>

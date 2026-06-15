@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conteúdos - Recicla-me Se For Capaz</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <header>
+        <h1>♻️ Recicla-me Se For Capaz</h1>
+        <p>Sistema de Gestão de Coleta Seletiva</p>
+    </header>
+
+    <nav>
+        <a href="/">Início</a>
+        <a href="/meus_dados">Meus Dados</a>
+        <a href="/bairros">Bairros</a>
+        <a href="/coletas">Coletas</a>
+        <a href="/conteudos">Conteúdos</a>
+        <a href="/comentarios">Comentários</a>
+        <a href="/logout" class="sair">Sair</a>
+    </nav>
+
+    <main>
+        <div class="card">
+            <h2>📝 Conteúdos</h2>
+            <a href="/conteudos/novo">+ Novo Conteúdo</a>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Tipo</th>
+                        <th>Categoria</th>
+                        <th>Autor</th>
+                        <th>Data</th>
+                        <th>Curtir</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in conteudos %}
+                    <tr>
+                        <td>{{ c.titulo }}</td>
+                        <td>{{ c.tipo }}</td>
+                        <td>{{ c.categoria }}</td>
+                        <td>{{ c.autor }}</td>
+                        <td>{{ c.criado_em }}</td>
+                        <td>
+                            <form method="POST" action="/curtir/{{ c.id }}">
+                                <button type="submit">❤️ Curtir</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+</body>
+</html>

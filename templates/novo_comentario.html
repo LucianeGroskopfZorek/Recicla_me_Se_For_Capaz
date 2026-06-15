@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novo Comentário - Recicla-me Se For Capaz</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <h1>♻️ Recicla-me Se For Capaz</h1>
+        <p>Sistema de Gestão de Coleta Seletiva</p>
+    </header>
+    <nav>
+        <a href="/">Início</a>
+        <a href="/meus_dados">Meus Dados</a>
+        <a href="/bairros">Bairros</a>
+        <a href="/coletas">Coletas</a>
+        <a href="/conteudos">Conteúdos</a>
+        <a href="/comentarios">Comentários</a>
+        <a href="/logout" class="sair">Sair</a>
+    </nav>
+    <main>
+        <div class="card">
+            <h2>💬 Novo Comentário</h2>
+            <form method="POST">
+                <label>Comentário</label>
+                <textarea name="texto" rows="4" required></textarea>
+
+                <label>Conteúdo</label>
+                <select name="id_conteudo">
+                    {% for c in conteudos %}
+                    <option value="{{ c.id }}">{{ c.titulo }}</option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit">Salvar</button>
+                <a href="/comentarios">Cancelar</a>
+            </form>
+        </div>
+    </main>
+</body>
+</html>

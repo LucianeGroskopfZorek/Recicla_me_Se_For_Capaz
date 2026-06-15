@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comentários - Recicla-me Se For Capaz</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <h1>♻️ Recicla-me Se For Capaz</h1>
+        <p>Sistema de Gestão de Coleta Seletiva</p>
+    </header>
+    <nav>
+        <a href="/">Início</a>
+        <a href="/meus_dados">Meus Dados</a>
+        <a href="/bairros">Bairros</a>
+        <a href="/coletas">Coletas</a>
+        <a href="/conteudos">Conteúdos</a>
+        <a href="/comentarios">Comentários</a>
+        <a href="/logout" class="sair">Sair</a>
+    </nav>
+    <main>
+        <div class="card">
+            <h2>💬 Comentários</h2>
+            <a href="/comentarios/novo">+ Novo Comentário</a>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Comentário</th>
+                        <th>Conteúdo</th>
+                        <th>Autor</th>
+                        <th>Data</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in comentarios %}
+                    <tr>
+                        <td>{{ c.texto }}</td>
+                        <td>{{ c.conteudo }}</td>
+                        <td>{{ c.autor }}</td>
+                        <td>{{ c.criado_em }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+</html>

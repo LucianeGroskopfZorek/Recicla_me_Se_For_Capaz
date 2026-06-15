@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Dados - Recicla-me Se For Capaz</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <header>
+        <h1>♻️ Recicla-me Se For Capaz</h1>
+        <p>Sistema de Gestão de Coleta Seletiva</p>
+    </header>
+
+    <nav>
+        <a href="/">Início</a>
+        <a href="/meus_dados">Meus Dados</a>
+        <a href="/bairros">Bairros</a>
+        <a href="/coletas">Coletas</a>
+        <a href="/logout" class="sair">Sair</a>
+    </nav>
+
+    <main>
+        <div class="card">
+            <h2>👤 Meus Dados</h2>
+
+            {% if sucesso %}
+            <p class="sucesso">{{ sucesso }}</p>
+            {% endif %}
+
+            {% if erro %}
+            <p class="erro">{{ erro }}</p>
+            {% endif %}
+
+            <!-- VISUALIZAÇÃO -->
+            <div class="dados-usuario" id="modo-visualizar">
+                <div class="dado">
+                    <span class="label">Nome</span>
+                    <span class="valor">{{ usuario.nome }}</span>
+                </div>
+                <div class="dado">
+                    <span class="label">Email</span>
+                    <span class="valor">{{ usuario.email }}</span>
+                </div>
+                <div class="dado">
+                    <span class="label">Telefone</span>
+                    <span class="valor">{{ usuario.telefone }}</span>
+                </div>
+                <div class="dado">
+                    <span class="label">Usuário</span>
+                    <span class="valor">{{ usuario.usuario }}</span>
+                </div>
+                <div class="dado">
+                    <span class="label">Data de Nascimento</span>
+                    <span class="valor">{{ usuario.data_nascimento }}</span>
+                </div>
+                <div class="dado">
+                    <span class="label">Bairro</span>
+                    <span class="valor">{{ usuario.nome_bairro if usuario.nome_bairro else "Não informado" }}</span>
+                </div>
+                <div class="dado">
+                    <span class="label">Alertas</span>
+                    <span class="valor">
+                        {% if usuario.alerta_seletiva %}✅ Coleta Seletiva{% endif %}
+                        {% if usuario.alerta_seletiva and usuario.alerta_comum %} &nbsp;|&nbsp; {% endif %}
+                        {% if usuario.alerta_comum %}✅ Coleta Comum{% endif %}
+                        {% if not usuario.alerta_seletiva and not usuario.alerta_comum %}Nenhum alerta ativado{% endif %}
+                    </span>
+                </div>
+
+                <button type="button" onclick="mostrarEdicao()" class="btn-editar">✏️ Editar meus dados</button>
+            </div>
+
+            <!-- FORMULÁRIO DE EDIÇÃO (oculto por padrão) -->
+            <div id="modo-editar" style="display:none;">
+                <form method="POST" action="/meus_dados/editar">
+                    <div class="campo">
+                        <label>Email</label>
+                        <input type="email" name="email" value="{{ usuario.email }}" required>
+                    </div>
+                    <div class="campo">
+                        <label>Telefone</label>
+                        <input type="text" name="telefone" value="{{ usuario.telefone }}">
+                    </div>
+                    <div class="campo">
+                        <label>Nome de usuário</label>
+                        <input type="text" name="usuario" value="{{ usuario.usuario }}" required>
+                    </div>
+                    <div class="campo">
+                        <label>Nova senha <small>(deixe em branco para não alterar)</small></label>
+                        <input type="password" name="nova_senha" placeholder="Nova senha">
+                    </div>
+                    <div class="campo">
+                        <label>Bairro</label>
+                        <select name="bairro_id">
+                            <option value="">-- Selecione seu bairro --</option>
+                            {% for bairro in bairros %}
+                            <option value="{{ bairro.id }}"
+                                {% if usuario.bairro_id == bairro.id %}selected{% endif %}>
+                                {{ bairro.nome }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="campo">
+                        <label>Preferências de alerta</label>
+                        <div style="display:flex; flex-direction:column; gap:0.5rem; margin-top:0.3rem;">
+                            <label style="font-weight:normal; display:flex; align-items:center; gap:0.5rem;">
+                                <input type="checkbox" name="alerta_seletiva" value="1"
+                                    {% if usuario.alerta_seletiva %}checked{% endif %}>
+                                Receber alerta de coleta seletiva
+                            </label>
+                            <label style="font-weight:normal; display:flex; align-items:center; gap:0.5rem;">
+                                <input type="checkbox" name="alerta_comum" value="1"
+                                    {% if usuario.alerta_comum %}checked{% endif %}>
+                                Receber alerta de coleta comum
+                            </label>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:1rem; margin-top:1rem;">
+                        <button type="submit">💾 Salvar alterações</button>
+                        <button type="button" onclick="cancelarEdicao()" class="btn-cancelar">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        function mostrarEdicao() {
+            document.getElementById("modo-visualizar").style.display = "none";
+            document.getElementById("modo-editar").style.display = "block";
+        }
+        function cancelarEdicao() {
+            document.getElementById("modo-editar").style.display = "none";
+            document.getElementById("modo-visualizar").style.display = "block";
+        }
+
+        // Se voltou com erro, mantém o formulário aberto
+        {% if erro %}
+        mostrarEdicao();
+        {% endif %}
+    </script>
+
+</body>
+</html>

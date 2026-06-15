@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Recicla-me Se For Capaz</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <header>
+        <h1>♻️ Recicla-me Se For Capaz</h1>
+        <p>Sistema de Gestão de Coleta Seletiva</p>
+    </header>
+
+    <main>
+
+        <div class="banner-cadastro">
+            <span>🌱 Novo por aqui?</span>
+            Cadastre-se e fique por dentro dos horários de coleta seletiva do seu bairro.
+            Ajude a manter a cidade limpa — leva poucos minutos!
+            <a href="/cadastro_publico">Fazer meu cadastro →</a>
+        </div>
+
+        <div class="card login-card">
+            <h2>🔐 Acesse sua conta</h2>
+
+            {% if erro %}
+            <p class="erro">{{ erro }}</p>
+            {% endif %}
+
+            <form method="POST" action="/login">
+                <div class="campo">
+                    <label>CPF</label>
+                    <input type="text" name="cpf" placeholder="Somente números" required>
+                </div>
+                <div class="campo">
+                    <label>Senha</label>
+                    <input type="password" name="senha" placeholder="Sua senha" required>
+                </div>
+                <button type="submit">Entrar</button>
+            </form>
+        </div>
+
+    </main>
+
+</body>
+</html>
