@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code - Recicla-me</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #4a1060 0%, #7b2d8b 50%, #e67e22 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 50px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            max-width: 420px;
+            width: 90%;
+        }
+        .logo-topo { font-size: 2.5rem; margin-bottom: 8px; }
+        h1 { font-size: 1.3rem; color: #4a1060; margin-bottom: 4px; font-weight: 700; }
+        .subtitulo { font-size: 0.85rem; color: #888; margin-bottom: 24px; }
+        #qrcode {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        #qrcode canvas, #qrcode img {
+            border-radius: 10px;
+            border: 5px solid #f0e6f6;
+        }
+        .instrucao {
+            font-size: 0.95rem;
+            color: #444;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+        .instrucao strong { color: #e67e22; }
+        .url-texto {
+            background: #f8f0ff;
+            border: 1px solid #d8b4fe;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.75rem;
+            color: #666;
+            word-break: break-all;
+            font-family: monospace;
+            margin-bottom: 16px;
+        }
+        .badge { font-size: 1.5rem; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="logo-topo">♻️</div>
+        <h1>Recicla-me Se For Capaz</h1>
+        <p class="subtitulo">Sistema de Coleta Seletiva — Canoinhas/SC</p>
+
+        <div id="qrcode"></div>
+
+        <p class="instrucao">
+            Aponte a câmera do celular para o QR Code<br>
+            e faça seu <strong>cadastro instantâneo!</strong>
+        </p>
+
+        <div class="url-texto">{{ url_cadastro }}</div>
+
+        <div class="badge">🌿 🌍 ♻️</div>
+    </div>
+
+    <script>
+        new QRCode(document.getElementById("qrcode"), {
+            text: "{{ url_cadastro }}",
+            width: 220,
+            height: 220,
+            colorDark: "#4a1060",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    </script>
+</body>
+</html>

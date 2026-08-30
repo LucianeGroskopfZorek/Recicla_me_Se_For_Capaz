@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recicla-me Se For Capaz · Check-in do Motorista</title>
+<style>
+  :root{
+    --roxo-900:#3A1A5C;
+    --roxo-700:#5B2C87;
+    --roxo-500:#8B5FBF;
+    --roxo-100:#F1E9FB;
+    --laranja-600:#F2760E;
+    --laranja-400:#FF9838;
+    --creme:#FAF8F5;
+    --texto:#2D1B3D;
+    --verde-ok:#2F9E5C;
+    --vermelho:#D64545;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+
+  body{
+    font-family:'Segoe UI', system-ui, sans-serif;
+    background: linear-gradient(180deg, var(--roxo-900) 0%, var(--roxo-700) 240px, var(--creme) 240px);
+    color:var(--texto);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:0 0 40px 0;
+  }
+
+  .app{
+    width:100%;
+    max-width:460px;
+  }
+
+  header{
+    padding:28px 24px 20px 24px;
+    color:#fff;
+  }
+
+  .eyebrow{
+    font-size:12px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    color:var(--laranja-400);
+    font-weight:700;
+    margin-bottom:6px;
+  }
+
+  h1{
+    font-size:22px;
+    font-weight:800;
+    line-height:1.25;
+  }
+
+  .subtitle{
+    margin-top:6px;
+    font-size:13.5px;
+    color:var(--roxo-100);
+    opacity:0.9;
+  }
+
+  main{
+    padding:0 20px;
+    margin-top:-70px;
+  }
+
+  .card{
+    background:#fff;
+    border-radius:18px;
+    box-shadow:0 10px 30px rgba(58,26,92,0.18);
+    padding:22px;
+    margin-bottom:16px;
+  }
+
+  .rota-select label{
+    font-size:12px;
+    font-weight:700;
+    color:var(--roxo-700);
+    text-transform:uppercase;
+    letter-spacing:0.6px;
+  }
+
+  select, input[type=text]{
+    width:100%;
+    margin-top:8px;
+    padding:12px 14px;
+    border-radius:10px;
+    border:1.5px solid #E3D9F3;
+    font-size:15px;
+    color:var(--texto);
+    background:var(--roxo-100);
+  }
+
+  .stamp-zone{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:28px 10px 8px 10px;
+    text-align:center;
+  }
+
+  .stamp{
+    width:150px;
+    height:150px;
+    border-radius:50%;
+    border:5px solid var(--roxo-500);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    transition:transform 0.25s ease, border-color 0.25s ease;
+  }
+
+  .stamp.confirmado{
+    border-color:var(--verde-ok);
+    transform:scale(1.04) rotate(-4deg);
+    animation:carimbar 0.4s ease;
+  }
+
+  @keyframes carimbar{
+    0%{transform:scale(1.4) rotate(-14deg); opacity:0;}
+    60%{transform:scale(0.96) rotate(-2deg); opacity:1;}
+    100%{transform:scale(1.04) rotate(-4deg);}
+  }
+
+  .stamp-icon{
+    font-size:40px;
+  }
+
+  .stamp-label{
+    font-size:12px;
+    font-weight:700;
+    margin-top:6px;
+    color:var(--roxo-700);
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+  }
+
+  .stamp.confirmado .stamp-label{ color:var(--verde-ok); }
+
+  button.acao{
+    margin-top:22px;
+    width:100%;
+    padding:15px;
+    border:none;
+    border-radius:12px;
+    background:var(--laranja-600);
+    color:#fff;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+    transition:background 0.15s ease, transform 0.1s ease;
+  }
+
+  button.acao:active{ transform:scale(0.98); }
+  button.acao:hover{ background:var(--laranja-400); }
+  button.acao:disabled{ background:#CBB9E0; cursor:not-allowed; }
+
+  .status-msg{
+    margin-top:12px;
+    font-size:13px;
+    text-align:center;
+    min-height:18px;
+    color:var(--roxo-700);
+  }
+
+  .status-msg.erro{ color:var(--vermelho); font-weight:600; }
+  .status-msg.ok{ color:var(--verde-ok); font-weight:600; }
+
+  .coords{
+    margin-top:14px;
+    background:var(--roxo-100);
+    border-radius:10px;
+    padding:12px 14px;
+    font-size:12.5px;
+    color:var(--roxo-900);
+    display:none;
+  }
+
+  .coords.show{ display:block; }
+  .coords div{ margin-bottom:2px; }
+  .coords b{ color:var(--roxo-700); }
+
+  .historico h2{
+    font-size:15px;
+    font-weight:800;
+    color:var(--roxo-700);
+    margin-bottom:12px;
+  }
+
+  .item-historico{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px 0;
+    border-bottom:1px solid #EEE4FA;
+  }
+
+  .item-historico:last-child{ border-bottom:none; }
+
+  .item-info b{
+    display:block;
+    font-size:13.5px;
+  }
+
+  .item-info span{
+    font-size:11.5px;
+    color:#7A6B8F;
+  }
+
+  .badge{
+    font-size:10.5px;
+    font-weight:700;
+    padding:4px 9px;
+    border-radius:20px;
+    background:#E4F6EA;
+    color:var(--verde-ok);
+    white-space:nowrap;
+  }
+
+  .vazio{
+    font-size:12.5px;
+    color:#9A8DAF;
+    text-align:center;
+    padding:10px 0;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="eyebrow">Recicla-me Se For Capaz</div>
+    <h1>Check-in de Coleta</h1>
+    <div class="subtitle">Marque o início da sua rota para registrar o ponto de presença.</div>
+  </header>
+
+  <main>
+
+    <div class="card rota-select">
+      <label for="rota">Bairro / Rota de hoje</label>
+      <select id="rota">
+        <option value="">Selecione a rota</option>
+        <option>Centro</option>
+        <option>Alto das Palmeiras</option>
+        <option>Marcílio Dias</option>
+        <option>Água Verde</option>
+        <option>Rio das Pedras</option>
+      </select>
+    </div>
+
+    <div class="card">
+      <div class="stamp-zone">
+        <div class="stamp" id="stamp">
+          <div class="stamp-icon" id="stampIcon">🚛</div>
+          <div class="stamp-label" id="stampLabel">Aguardando</div>
+        </div>
+
+        <button class="acao" id="btnCheckin">Marcar presença agora</button>
+        <div class="status-msg" id="statusMsg"></div>
+
+        <div class="coords" id="coordsBox">
+          <div><b>Latitude:</b> <span id="lat">--</span></div>
+          <div><b>Longitude:</b> <span id="lng">--</span></div>
+          <div><b>Precisão:</b> <span id="acc">--</span> m</div>
+          <div><b>Horário:</b> <span id="hora">--</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card historico">
+      <h2>Check-ins de hoje</h2>
+      <div id="listaHistorico">
+        <div class="vazio">Nenhum check-in registrado ainda.</div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  const btn = document.getElementById('btnCheckin');
+  const stamp = document.getElementById('stamp');
+  const stampIcon = document.getElementById('stampIcon');
+  const stampLabel = document.getElementById('stampLabel');
+  const statusMsg = document.getElementById('statusMsg');
+  const coordsBox = document.getElementById('coordsBox');
+  const listaHistorico = document.getElementById('listaHistorico');
+  const rotaSelect = document.getElementById('rota');
+
+  let historico = [];
+
+  btn.addEventListener('click', () => {
+    const rota = rotaSelect.value;
+    if(!rota){
+      statusMsg.textContent = 'Selecione a rota antes de marcar presença.';
+      statusMsg.className = 'status-msg erro';
+      return;
+    }
+
+    if(!('geolocation' in navigator)){
+      statusMsg.textContent = 'Este dispositivo não suporta geolocalização.';
+      statusMsg.className = 'status-msg erro';
+      return;
+    }
+
+    btn.disabled = true;
+    statusMsg.textContent = 'Obtendo localização...';
+    statusMsg.className = 'status-msg';
+
+    navigator.geolocation.getCurrentPosition(sucesso, erro, {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0
+    });
+  });
+
+  function sucesso(posicao){
+    const { latitude, longitude, accuracy } = posicao.coords;
+    const agora = new Date();
+    const horaFormatada = agora.toLocaleTimeString('pt-BR');
+
+    document.getElementById('lat').textContent = latitude.toFixed(6);
+    document.getElementById('lng').textContent = longitude.toFixed(6);
+    document.getElementById('acc').textContent = accuracy.toFixed(0);
+    document.getElementById('hora').textContent = horaFormatada;
+    coordsBox.classList.add('show');
+
+    stamp.classList.add('confirmado');
+    stampIcon.textContent = '✓';
+    stampLabel.textContent = 'Confirmado';
+
+    statusMsg.textContent = 'Presença registrada com sucesso.';
+    statusMsg.className = 'status-msg ok';
+
+    // Envio para o backend Flask.
+    // Ajuste a URL para o endpoint real do projeto (ex: '/api/checkin').
+    enviarParaServidor({
+      rota: rotaSelect.value,
+      latitude: latitude,
+      longitude: longitude,
+      precisao: accuracy,
+      horario: agora.toISOString()
+    });
+
+    adicionarAoHistorico(rotaSelect.value, horaFormatada);
+
+    btn.disabled = false;
+  }
+
+  function erro(err){
+    let msg = 'Não foi possível obter sua localização.';
+    if(err.code === err.PERMISSION_DENIED){
+      msg = 'Permissão de localização negada. Ative o GPS e permita o acesso.';
+    } else if(err.code === err.TIMEOUT){
+      msg = 'Tempo esgotado ao tentar localizar o dispositivo.';
+    }
+    statusMsg.textContent = msg;
+    statusMsg.className = 'status-msg erro';
+    btn.disabled = false;
+  }
+
+  function adicionarAoHistorico(rota, hora){
+    historico.unshift({ rota, hora });
+
+    if(listaHistorico.querySelector('.vazio')){
+      listaHistorico.innerHTML = '';
+    }
+
+    const item = document.createElement('div');
+    item.className = 'item-historico';
+    item.innerHTML = `
+      <div class="item-info">
+        <b>${rota}</b>
+        <span>${hora}</span>
+      </div>
+      <div class="badge">Registrado</div>
+    `;
+    listaHistorico.prepend(item);
+  }
+
+  // Simulação do envio ao backend Flask.
+  // Em produção, isso chama a rota POST /api/checkin do servidor.
+  async function enviarParaServidor(dados){
+    console.log('Enviando check-in para o servidor:', dados);
+    /*
+    try {
+      const resposta = await fetch('/api/checkin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dados)
+      });
+      if(!resposta.ok) throw new Error('Falha ao enviar check-in');
+    } catch(e) {
+      console.error(e);
+    }
+    */
+  }
+</script>
+</body>
+</html>
