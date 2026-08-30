@@ -31,7 +31,7 @@
                 </div>
                 <div class="campo">
                     <label>CPF</label>
-                    <input type="text" name="cpf" placeholder="Somente números" required>
+                    <input type="text" name="cpf" id="cpf" placeholder="000.000.000-00" maxlength="14" required>
                 </div>
                 <div class="campo">
                     <label>Data de Nascimento</label>
@@ -53,10 +53,34 @@
                     <label>Senha</label>
                     <input type="password" name="senha_hash" placeholder="Senha" required>
                 </div>
+                <div class="campo">
+                    <label>Bairro</label>
+                    <select name="bairro_id">
+                        <option value="">-- Selecione um bairro --</option>
+                        {% for bairro in bairros %}
+                        <option value="{{ bairro.id }}">{{ bairro.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="campo">
+                    <label>Preferências de Alerta</label>
+                    <label><input type="checkbox" name="alerta_seletiva" value="1"> Coleta Seletiva</label>
+                    <label><input type="checkbox" name="alerta_comum" value="1"> Coleta Orgânica</label>
+                </div>
                 <button type="submit">✅ Cadastrar</button>
             </form>
         </div>
     </main>
+
+    <script>
+    document.getElementById("cpf").addEventListener("input", function() {
+        let v = this.value.replace(/\D/g, "").substring(0, 11);
+        v = v.replace(/(\d{3})(\d)/, "$1.$2");
+        v = v.replace(/(\d{3})(\d)/, "$1.$2");
+        v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+        this.value = v;
+    });
+    </script>
 
 </body>
 </html>

@@ -240,3 +240,17 @@ nav a.sair:hover {
 .btn-cancelar:hover {
     background-color: #bdbdbd;
 }
+.btn-alerta {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #2e7d32;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.btn-alerta:hover {
+    background-color: #1b5e20;
+}
