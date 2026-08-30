@@ -33,7 +33,7 @@
                 </div>
                 <div class="campo">
                     <label>CPF</label>
-                    <input type="text" name="cpf" placeholder="Somente números" maxlength="11" required>
+                    <input type="text" name="cpf" id="cpf" placeholder="000.000.000-00" maxlength="14" required>
                 </div>
                 <div class="campo">
                     <label>Data de nascimento</label>
@@ -56,7 +56,6 @@
                     <input type="password" name="senha_hash" placeholder="Crie uma senha" required>
                 </div>
 
-                <!-- Seleção de bairro -->
                 <div class="campo">
                     <label>Seu bairro</label>
                     <select name="bairro_id" id="bairro_id" onchange="mostrarDiasColeta()">
@@ -67,13 +66,11 @@
                     </select>
                 </div>
 
-                <!-- Dias de coleta do bairro -->
                 <div id="info_coleta" style="display:none; background:#f0f9f0; border:1px solid #a8d5a2; border-radius:8px; padding:1rem; margin-bottom:1rem;">
                     <p style="font-weight:600; color:#2d6a2d; margin-bottom:0.5rem;">📅 Dias de coleta no seu bairro:</p>
                     <div id="dias_coleta" style="color:#444; font-size:0.95rem;"></div>
                 </div>
 
-                <!-- Preferências de alerta -->
                 <div id="preferencias_alerta" style="display:none;" class="campo">
                     <label style="margin-bottom:0.5rem;">Quero receber alertas de:</label>
                     <div style="display:flex; flex-direction:column; gap:0.5rem; margin-top:0.25rem;">
@@ -98,6 +95,14 @@
     </main>
 
     <script>
+        document.getElementById("cpf").addEventListener("input", function() {
+            let v = this.value.replace(/\D/g, "").substring(0, 11);
+            v = v.replace(/(\d{3})(\d)/, "$1.$2");
+            v = v.replace(/(\d{3})(\d)/, "$1.$2");
+            v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+            this.value = v;
+        });
+
         function mostrarDiasColeta() {
             const bairroId = document.getElementById("bairro_id").value;
             const infoDiv = document.getElementById("info_coleta");

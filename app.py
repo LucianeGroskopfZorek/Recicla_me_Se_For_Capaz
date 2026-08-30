@@ -1,5 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import mysql.connector
+import qrcode as qrcode_lib
+import io
+import base64
 from alertas import iniciar_scheduler
 
 app = Flask(__name__)
@@ -78,12 +81,9 @@ def usuarios():
         return redirect(url_for("login"))
     if session["perfil"] != "admin":
         return redirect(url_for("index"))
-    
     bairro_filtro = request.args.get("bairro_id")
-    
     conexao = conectar()
     cursor = conexao.cursor(dictionary=True)
-    
     if bairro_filtro:
         cursor.execute("""
             SELECT u.*, b.nome AS nome_bairro
@@ -100,10 +100,8 @@ def usuarios():
             ORDER BY u.nome
         """)
     lista = cursor.fetchall()
-    
     cursor.execute("SELECT id, nome FROM bairro ORDER BY nome")
     bairros = cursor.fetchall()
-    
     cursor.close()
     conexao.close()
     return render_template("usuarios.html", usuarios=lista, bairros=bairros, bairro_filtro=bairro_filtro)
@@ -114,6 +112,12 @@ def cadastrar():
         return redirect(url_for("login"))
     if session["perfil"] != "admin":
         return redirect(url_for("index"))
+    conexao = conectar()
+    cursor = conexao.cursor(dictionary=True)
+    cursor.execute("SELECT id, nome FROM bairro ORDER BY nome")
+    bairros = cursor.fetchall()
+    cursor.close()
+    conexao.close()
     if request.method == "POST":
         nome = request.form["nome"]
         cpf = request.form["cpf"]
@@ -122,16 +126,22 @@ def cadastrar():
         telefone = request.form["telefone"]
         usuario = request.form["usuario"]
         senha_hash = request.form["senha_hash"]
+        bairro_id = request.form.get("bairro_id") or None
+        alerta_seletiva = 1 if request.form.get("alerta_seletiva") else 0
+        alerta_comum = 1 if request.form.get("alerta_comum") else 0
         conexao = conectar()
         cursor = conexao.cursor()
-        sql = """INSERT INTO usuario (nome, cpf, data_nascimento, email, telefone, usuario, senha_hash)
-                 VALUES (%s, %s, %s, %s, %s, %s, %s)"""
-        cursor.execute(sql, (nome, cpf, data_nascimento, email, telefone, usuario, senha_hash))
+        sql = """INSERT INTO usuario (nome, cpf, data_nascimento, email, telefone, usuario, senha_hash,
+                 bairro_id, alerta_seletiva, alerta_comum)
+                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+        cursor.execute(sql, (nome, cpf, data_nascimento, email, telefone,
+                             usuario, senha_hash, bairro_id,
+                             alerta_seletiva, alerta_comum))
         conexao.commit()
         cursor.close()
         conexao.close()
         return redirect(url_for("usuarios"))
-    return render_template("cadastrar.html")
+    return render_template("cadastrar.html", bairros=bairros)
 
 @app.route("/bairros")
 def bairros():
@@ -336,14 +346,12 @@ def api_coletas_bairro(bairro_id):
 def cadastro_publico():
     erro = None
     sucesso = None
-
     conexao = conectar()
     cursor = conexao.cursor(dictionary=True)
     cursor.execute("SELECT id, nome FROM bairro ORDER BY nome")
     bairros = cursor.fetchall()
     cursor.close()
     conexao.close()
-
     if request.method == "POST":
         nome = request.form["nome"]
         cpf = request.form["cpf"]
@@ -355,7 +363,6 @@ def cadastro_publico():
         bairro_id = request.form.get("bairro_id") or None
         alerta_seletiva = 1 if request.form.get("alerta_seletiva") else 0
         alerta_comum = 1 if request.form.get("alerta_comum") else 0
-
         conexao = conectar()
         cursor = conexao.cursor()
         try:
@@ -372,11 +379,7 @@ def cadastro_publico():
             erro = "Erro ao cadastrar. CPF ou e-mail já podem estar em uso."
         cursor.close()
         conexao.close()
-
-    return render_template("cadastro_publico.html",
-                           erro=erro,
-                           sucesso=sucesso,
-                           bairros=bairros)
+    return render_template("cadastro_publico.html", erro=erro, sucesso=sucesso, bairros=bairros)
 
 @app.route("/meus_dados/editar", methods=["POST"])
 def editar_meus_dados():
@@ -450,21 +453,17 @@ def editar_bairro(id):
         return redirect(url_for("login"))
     if session["perfil"] != "admin":
         return redirect(url_for("index"))
-
     conexao = conectar()
     cursor = conexao.cursor(dictionary=True)
     erro = None
     sucesso = None
-
     if request.method == "POST":
         nome = request.form["nome"]
         zona = request.form["zona"]
         dia_seletiva = request.form.get("dia_seletiva") or None
         dia_comum = request.form.get("dia_comum") or None
-
         try:
             cursor.execute("UPDATE bairro SET nome=%s, zona=%s WHERE id=%s", (nome, zona, id))
-
             cursor.execute("SELECT id FROM coleta WHERE bairro_id=%s AND tipo='Seletiva'", (id,))
             col_seletiva = cursor.fetchone()
             if dia_seletiva:
@@ -475,7 +474,6 @@ def editar_bairro(id):
             else:
                 if col_seletiva:
                     cursor.execute("DELETE FROM coleta WHERE id=%s", (col_seletiva["id"],))
-
             cursor.execute("SELECT id FROM coleta WHERE bairro_id=%s AND tipo='Orgânica'", (id,))
             col_comum = cursor.fetchone()
             if dia_comum:
@@ -486,12 +484,10 @@ def editar_bairro(id):
             else:
                 if col_comum:
                     cursor.execute("DELETE FROM coleta WHERE id=%s", (col_comum["id"],))
-
             conexao.commit()
             sucesso = "Bairro atualizado com sucesso! ✅"
         except Exception as e:
             erro = f"Erro ao salvar: {str(e)}"
-
     cursor.execute("SELECT * FROM bairro WHERE id=%s", (id,))
     bairro = cursor.fetchone()
     cursor.execute("SELECT * FROM coleta WHERE bairro_id=%s AND tipo='Seletiva'", (id,))
@@ -500,7 +496,6 @@ def editar_bairro(id):
     coleta_comum = cursor.fetchone()
     cursor.close()
     conexao.close()
-
     return render_template("editar_bairro.html",
                            bairro=bairro,
                            coleta_seletiva=coleta_seletiva,
@@ -508,5 +503,46 @@ def editar_bairro(id):
                            erro=erro,
                            sucesso=sucesso)
 
+@app.route("/testar_alerta")
+def testar_alerta():
+    if "usuario_id" not in session or session["perfil"] != "admin":
+        return redirect(url_for("login"))
+    from alertas import enviar_email, conectar
+    conexao = conectar()
+    cursor = conexao.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT
+            u.nome AS usuario_nome,
+            u.email,
+            b.nome AS bairro,
+            c.dia_semana,
+            c.tipo
+        FROM usuario u
+        JOIN bairro b ON u.bairro_id = b.id
+        JOIN coleta c ON c.bairro_id = b.id
+        WHERE u.email IS NOT NULL
+          AND u.email != ''
+          AND u.bairro_id IS NOT NULL
+        LIMIT 10
+    """)
+    coletas = cursor.fetchall()
+    cursor.close()
+    conexao.close()
+    if not coletas:
+        return "Nenhum usuário com bairro e e-mail cadastrado encontrado."
+    for coleta in coletas:
+        enviar_email(
+            coleta["email"],
+            coleta["usuario_nome"],
+            coleta["bairro"],
+            coleta["dia_semana"],
+            coleta["tipo"]
+        )
+    return f"✅ {len(coletas)} e-mail(s) disparado(s)! Verifique o terminal."
+
+@app.route('/qrcode')
+def pagina_qrcode():
+    url_cadastro = request.host_url + 'cadastro_publico'
+    return render_template('qrcode.html', url_cadastro=url_cadastro)
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0")
